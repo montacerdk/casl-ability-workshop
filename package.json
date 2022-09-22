@@ -9,9 +9,10 @@
   "author": "montacer.dkhilali@gmail.com",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "^18.7.18",
     "typescript": "^4.8.3"
   },
   "dependencies": {
-    "@casl/ability": "^6.2.0"
+    "@casl/ability": "^5.4.4"
   }
 }
