@@ -27,7 +27,9 @@ const defineAbility = (user: User) => {
   }
 
   if (user.isGuest) {
-    can(AbilityAction.Update, AbilitySubject.Posts, { authorId: user.id });
+    can(AbilityAction.Update, AbilitySubject.Posts, ["content"], {
+      authorId: user.id,
+    });
     can(AbilityAction.ReadAll, AbilitySubject.Users);
     can(AbilityAction.ReadAll, AbilitySubject.Comments);
     can(AbilityAction.ReadAll, AbilitySubject.Videos);
@@ -36,15 +38,25 @@ const defineAbility = (user: User) => {
   return build();
 };
 
-class Post {
-  public authorId: string;
+interface IPost {
+  authorId: string;
+  content?: string;
+  isPublished?: boolean;
+}
 
-  constructor(authorId: string) {
+class Post implements IPost {
+  public authorId: string;
+  public content?: string;
+  public isPublished?: boolean;
+
+  constructor({ authorId, content, isPublished }: IPost) {
     this.authorId = authorId;
+    this.content = content;
+    this.isPublished = isPublished;
   }
 }
 
-const randomPost = new Post("2222");
+const randomPost = new Post({ authorId: "1111" });
 
 const user: User = {
   id: "1111",
@@ -68,7 +80,8 @@ const canDeleteVideos = ability.can(
 );
 const canUpdatePosts = ability.can(
   AbilityAction.Update,
-  subject(AbilitySubject.Posts, randomPost)
+  subject(AbilitySubject.Posts, randomPost),
+  "content"
 );
 
 console.log("canReadAllPosts =======> ", canReadAllPosts);
