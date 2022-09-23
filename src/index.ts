@@ -1,4 +1,9 @@
-import { Ability, AbilityBuilder, subject } from "@casl/ability";
+import {
+  ForbiddenError,
+  AbilityBuilder,
+  Ability,
+  subject,
+} from "@casl/ability";
 
 import { AbilityAction } from "./AbilityAction";
 import { AbilitySubject } from "./AbilitySubject";
@@ -19,11 +24,14 @@ const defineAbility = (user: User) => {
   }
 
   if (user.isManager) {
-    can(AbilityAction.Manage, AbilitySubject.Posts);
+    can([AbilityAction.Read, AbilityAction.Create], AbilitySubject.Posts);
     can(AbilityAction.Manage, AbilitySubject.Comments);
     can(AbilityAction.Manage, AbilitySubject.Videos);
 
     cannot(AbilityAction.Manage, AbilitySubject.Users);
+    cannot(AbilityAction.Delete, AbilitySubject.Posts).because(
+      "Only Admin can delete posts."
+    );
   }
 
   if (user.isGuest) {
@@ -61,7 +69,7 @@ const randomPost = new Post({ authorId: "1111" });
 const user: User = {
   id: "1111",
   fullName: "John Doe",
-  isGuest: true,
+  isManager: true,
 };
 
 const ability = defineAbility(user);
@@ -88,3 +96,11 @@ console.log("canReadAllPosts =======> ", canReadAllPosts);
 console.log("canDeleteVideos =======> ", canDeleteVideos);
 console.log("canWatchAllVideos =======> ", canWatchAllVideos);
 console.log("canUpdatePosts =======> ", canUpdatePosts);
+
+try {
+  ForbiddenError.from(ability).throwUnlessCan(AbilityAction.Delete, randomPost);
+
+  // deletePost()
+} catch (error: any) {
+  console.error(error.message);
+}
