@@ -1,6 +1,6 @@
 export enum AbilityAction {
   /**
-   * Reserved action.
+   * Reserved action that allow user to perform all actions.
    */
   Manage = "manage",
 
